@@ -1,304 +1,841 @@
-<script setup>
-import { ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-
-const barberos = ['Don Ramiro', 'Kevin', 'Andrés']
-const tiposServicio = ['Corte clásico', 'Corte moderno', 'Barba', 'Corte + Barba', 'Cejas', 'Tinte']
-const metodosPago = ['Efectivo', 'Transferencia', 'Tarjeta']
-const estadosPago = ['Pagado', 'Pendiente', 'Fiado']
-
-const servicios = useLocalStorage('servicios-barberia-don-ramiro', [])
-
-const modalAbierto = ref(false)
-const modoEdicion = ref(false)
-const idEdicion = ref(null)
-const errorFormulario = ref('')
-
-const fCliente = ref('')
-const fTipo = ref('')
-const fBarbero = ref('')
-const fFecha = ref('')
-const fHora = ref('')
-const fPrecio = ref('')
-const fMetodoPago = ref('')
-const fEstadoPago = ref('Pagado')
-const fCalificacion = ref(5)
-const fObservaciones = ref('')
-
-const idAEliminar = ref(null)
-
-function limpiarFormulario() {
-  fCliente.value = ''
-  fTipo.value = ''
-  fBarbero.value = ''
-  fFecha.value = ''
-  fHora.value = ''
-  fPrecio.value = ''
-  fMetodoPago.value = ''
-  fEstadoPago.value = 'Pagado'
-  fCalificacion.value = 5
-  fObservaciones.value = ''
-  errorFormulario.value = ''
-}
-
-function abrirModalNuevo() {
-  modoEdicion.value = false
-  idEdicion.value = null
-  limpiarFormulario()
-  modalAbierto.value = true
-}
-
-function abrirModalEditar(servicio) {
-  modoEdicion.value = true
-  idEdicion.value = servicio.id
-  fCliente.value = servicio.cliente
-  fTipo.value = servicio.tipo
-  fBarbero.value = servicio.barbero
-  fFecha.value = servicio.fecha
-  fHora.value = servicio.hora
-  fPrecio.value = servicio.precio
-  fMetodoPago.value = servicio.metodoPago
-  fEstadoPago.value = servicio.estadoPago
-  fCalificacion.value = servicio.calificacion
-  fObservaciones.value = servicio.observaciones
-  errorFormulario.value = ''
-  modalAbierto.value = true
-}
-
-function cerrarModal() {
-  modalAbierto.value = false
-  errorFormulario.value = ''
-}
-
-function elegirEstrella(numero) {
-  fCalificacion.value = numero
-}
-
-function guardarServicio() {
-  if (fCliente.value.trim() === '') {
-    errorFormulario.value = 'Escribe el nombre del cliente'
-    return
-  }
-  if (fTipo.value === '') {
-    errorFormulario.value = 'Selecciona el tipo de servicio'
-    return
-  }
-  if (fBarbero.value === '') {
-    errorFormulario.value = 'Selecciona quién atendió'
-    return
-  }
-  if (fFecha.value === '') {
-    errorFormulario.value = 'Selecciona la fecha'
-    return
-  }
-  if (fHora.value === '') {
-    errorFormulario.value = 'Selecciona la hora'
-    return
-  }
-  if (fPrecio.value === '' || Number(fPrecio.value) <= 0) {
-    errorFormulario.value = 'El precio debe ser mayor a 0'
-    return
-  }
-  if (fMetodoPago.value === '') {
-    errorFormulario.value = 'Selecciona el método de pago'
-    return
-  }
-
-  if (modoEdicion.value) {
-    for (let i = 0; i < servicios.value.length; i++) {
-      if (servicios.value[i].id === idEdicion.value) {
-        servicios.value[i].cliente = fCliente.value.trim()
-        servicios.value[i].tipo = fTipo.value
-        servicios.value[i].barbero = fBarbero.value
-        servicios.value[i].fecha = fFecha.value
-        servicios.value[i].hora = fHora.value
-        servicios.value[i].precio = Number(fPrecio.value)
-        servicios.value[i].metodoPago = fMetodoPago.value
-        servicios.value[i].estadoPago = fEstadoPago.value
-        servicios.value[i].calificacion = Number(fCalificacion.value)
-        servicios.value[i].observaciones = fObservaciones.value.trim()
-      }
-    }
-  } else {
-    servicios.value.push({
-      id: Date.now(),
-      cliente: fCliente.value.trim(),
-      tipo: fTipo.value,
-      barbero: fBarbero.value,
-      fecha: fFecha.value,
-      hora: fHora.value,
-      precio: Number(fPrecio.value),
-      metodoPago: fMetodoPago.value,
-      estadoPago: fEstadoPago.value,
-      calificacion: Number(fCalificacion.value),
-      observaciones: fObservaciones.value.trim()
-    })
-  }
-
-  cerrarModal()
-}
-
-function pedirConfirmacionEliminar(id) {
-  idAEliminar.value = id
-}
-
-function cancelarEliminar() {
-  idAEliminar.value = null
-}
-
-function eliminarServicio(id) {
-  const nuevaLista = []
-  for (let i = 0; i < servicios.value.length; i++) {
-    if (servicios.value[i].id !== id) {
-      nuevaLista.push(servicios.value[i])
-    }
-  }
-  servicios.value = nuevaLista
-  idAEliminar.value = null
-}
-</script>
-
 <template>
-  <div>
-    <div class="barra-superior">
-      <div class="encabezado">
-        <h1>Barbería Don Ramiro</h1>
-        <p>Registro de servicios</p>
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <div class="header-left">
+      <div>
+        <div class="header-titulo">Barberia Don Ramiro</div>
+        <div class="header-subtitulo">Registro de servicios diarios</div>
       </div>
-      <button class="boton-nuevo" @click="abrirModalNuevo">+ Nuevo servicio</button>
+    </div>
+    <button class="btn-nuevo" @click="abrirModalNuevo">+ Nuevo servicio</button>
+  </header>
+
+  <!-- ===================== RESUMEN ===================== -->
+  <div class="resumen">
+    <div class="resumen-card">
+      <div class="numero">{{ servicios.length }}</div>
+      <div class="etiqueta">Servicios</div>
+    </div>
+    <div class="resumen-card">
+      <div class="numero">$ {{ totalCobrado() }}</div>
+      <div class="etiqueta">Total cobrado</div>
+    </div>
+    <div class="resumen-card rojo">
+      <div class="numero">{{ contarEstado('pendiente') }}</div>
+      <div class="etiqueta">Pendientes</div>
+    </div>
+    <div class="resumen-card azul">
+      <div class="numero">{{ contarEstado('abonado') }}</div>
+      <div class="etiqueta">Abonados</div>
+    </div>
+    <div class="resumen-card">
+      <div class="numero small" :class="{ small: servicioMasPopular().length > 8 }">
+        {{ servicioMasPopular() }}
+      </div>
+      <div class="etiqueta">Mas solicitado</div>
+    </div>
+  </div>
+
+  <!-- ===================== FILTROS ===================== -->
+  <div class="filtros">
+    <input v-model="filtroBusqueda" type="text" placeholder="Buscar por nombre de cliente..." />
+    <select v-model="filtroEstado">
+      <option value="">Todos los estados</option>
+      <option value="pagado">Pagado</option>
+      <option value="abonado">Abonado</option>
+      <option value="pendiente">Pendiente</option>
+    </select>
+    <select v-model="filtroBarbero">
+      <option value="">Todos los barberos</option>
+      <option v-for="b in barberos" :key="b" :value="b">{{ b }}</option>
+    </select>
+  </div>
+
+  <!-- ===================== LISTA ===================== -->
+  <div class="lista">
+    <div v-if="serviciosFiltrados().length === 0" class="lista-vacia">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 2v6m0 0c0 2.21 1.79 4 4 4s4-1.79 4-4V2M6 8H2m16 0h-4M12 12v10M8 22h8"/>
+      </svg>
+      <p>No hay servicios registrados</p>
     </div>
 
-    <p v-if="servicios.length === 0" class="sin-resultados">
-      Todavía no hay servicios registrados.
-    </p>
-
-    <div v-for="servicio in servicios" :key="servicio.id" class="tarjeta-servicio" :class="{ 'sin-pagar': servicio.estadoPago !== 'Pagado' }">
-      <div class="tarjeta-encabezado">
-        <h3>{{ servicio.cliente }}</h3>
-        <span
-          class="estado"
-          :class="{ pagado: servicio.estadoPago === 'Pagado', pendiente: servicio.estadoPago === 'Pendiente', fiado: servicio.estadoPago === 'Fiado' }"
-        >{{ servicio.estadoPago }}</span>
+    <div
+      v-for="s in serviciosFiltrados()"
+      :key="s.id"
+      class="tarjeta"
+      :class="s.estadoPago"
+    >
+      <!-- nombre y fecha -->
+      <div class="t-top">
+        <div class="t-nombre">{{ s.nombre }}</div>
+        <div class="t-fecha">{{ formatearFecha(s.fechaHora) }}</div>
       </div>
 
-      <p class="tipo-servicio">{{ servicio.tipo }}</p>
+      <!-- servicio -->
+      <div class="t-servicio">{{ s.tipoServicio }}</div>
+      <div class="t-barbero">Atendido por: {{ s.barbero }}</div>
 
-      <p class="fila-datos"><b>Barbero:</b> {{ servicio.barbero }}</p>
-      <p class="fila-datos"><b>Fecha:</b> {{ servicio.fecha }} — {{ servicio.hora }}</p>
-      <p class="fila-datos"><b>Precio:</b> ${{ servicio.precio }}</p>
-
-      <p class="fila-datos">
-        <span v-if="servicio.metodoPago === 'Efectivo'" class="icono-pago">💵</span>
-        <span v-else-if="servicio.metodoPago === 'Transferencia'" class="icono-pago">🏦</span>
-        <span v-else-if="servicio.metodoPago === 'Tarjeta'" class="icono-pago">💳</span>
-        {{ servicio.metodoPago }}
-      </p>
-
-      <div class="estrellas" :class="{ baja: servicio.calificacion <= 2 }">
-        <span v-for="n in 5" :key="n">
-          <span v-if="n <= servicio.calificacion" class="llena">★</span>
-          <span v-else>★</span>
+      <!-- precio y estado -->
+      <div class="t-fila">
+        <div>
+          <div class="t-precio">$ {{ formatPrecio(s.precio) }}</div>
+          <div v-if="s.estadoPago === 'abonado'" class="t-saldo">
+            Saldo: $ {{ formatPrecio(calcularSaldo(s)) }}
+          </div>
+        </div>
+        <span class="badge" :class="s.estadoPago">
+          <span v-if="s.estadoPago === 'pagado'">Pagado</span>
+          <span v-else-if="s.estadoPago === 'abonado'">Abonado</span>
+          <span v-else-if="s.estadoPago === 'pendiente'">Pendiente</span>
         </span>
       </div>
-      <p v-if="servicio.calificacion <= 2" class="texto-calificacion-baja">Calificación baja</p>
 
-      <p v-if="servicio.observaciones" class="observaciones">{{ servicio.observaciones }}</p>
-
-      <div v-if="idAEliminar !== servicio.id" class="tarjeta-botones">
-        <button @click="abrirModalEditar(servicio)">Editar</button>
-        <button class="boton-eliminar" @click="pedirConfirmacionEliminar(servicio.id)">Eliminar</button>
+      <!-- metodo de pago -->
+      <div class="t-metodo">
+        Pago:
+        <span class="metodo-tag" :class="s.metodoPago">{{ s.metodoPago }}</span>
       </div>
 
-      <div v-else class="confirmar-eliminar">
-        <p>¿Seguro que quieres eliminar este servicio?</p>
-        <button @click="eliminarServicio(servicio.id)">Sí, eliminar</button>
-        <button @click="cancelarEliminar">Cancelar</button>
+      <!-- calificacion -->
+      <div class="t-fila">
+        <div class="t-estrellas">
+          <span v-for="i in 5" :key="i" :class="i <= s.calificacion ? 'estrella-on' : 'estrella-off'">
+            &#9733;
+          </span>
+        </div>
+        <span v-if="s.calificacion === 0" class="t-sin-calificar">Sin calificar</span>
+        <span v-else-if="s.calificacion <= 2" class="t-alerta">Servicio a revisar</span>
+        <span v-else class="t-calificacion-ok">Buena atencion</span>
+      </div>
+
+      <!-- aviso destacado si el pago esta pendiente -->
+      <div v-show="s.estadoPago === 'pendiente'" class="t-aviso-pendiente">
+        Pago pendiente — contactar al cliente
+      </div>
+
+      <!-- panel de abonos (solo si tiene) -->
+      <div v-if="s.estadoPago === 'abonado' && s.abonos && s.abonos.length > 0" class="t-abonos">
+        <div class="t-abonos-titulo">Historial de abonos</div>
+        <div class="t-abonos-lista">
+          <div v-for="(ab, idx) in s.abonos" :key="idx" class="t-abono-item">
+            <span>{{ formatearFechaCorta(ab.fecha) }}</span>
+            <span class="t-abono-valor">$ {{ formatPrecio(ab.monto) }}</span>
+          </div>
+        </div>
+        <div class="t-abonos-total">
+          <span>Total abonado</span>
+          <span>$ {{ formatPrecio(totalAbonado(s)) }}</span>
+        </div>
+      </div>
+
+      <!-- boton abonar -->
+      <button
+        v-if="s.estadoPago === 'abonado'"
+        class="btn-abonar"
+        @click="abrirModalAbono(s)"
+      >
+        Registrar abono
+      </button>
+
+      <!-- observaciones -->
+      <div v-if="s.observaciones" class="t-obs">Nota: {{ s.observaciones }}</div>
+
+      <!-- acciones -->
+      <div class="t-acciones">
+        <button class="btn-calificar" @click="abrirModalCalificacion(s)">
+          <span v-if="s.calificacion > 0">Recalificar</span>
+          <span v-else>Calificar</span>
+        </button>
+        <button class="btn-editar" @click="abrirModalEditar(s)">Editar</button>
+        <button class="btn-eliminar" @click="pedirConfirmacion(s)">Eliminar</button>
       </div>
     </div>
+  </div>
 
-    <div v-if="modalAbierto" class="fondo-modal">
-      <div class="caja-modal">
-        <h2 v-if="modoEdicion">Editar servicio</h2>
-        <h2 v-else>Nuevo servicio</h2>
+  <!-- ===================== MODAL FORMULARIO ===================== -->
+  <div v-if="mostrarModal" class="modal-overlay" @click.self="cerrarModal">
+    <div class="modal">
+      <div class="modal-cabecera">
+        <div class="modal-titulo">
+          <span v-if="modoEditar">Editar servicio</span>
+          <span v-else>Registrar nuevo servicio</span>
+        </div>
+        <button class="modal-cerrar" @click="cerrarModal">&#10005;</button>
+      </div>
 
-        <p v-if="errorFormulario" class="mensaje-error">{{ errorFormulario }}</p>
+      <!-- SECCION: datos del cliente -->
+      <div class="form-seccion">Datos del cliente</div>
 
-        <form @submit.prevent="guardarServicio">
-          <div class="campo-formulario">
-            <label>Nombre del cliente</label>
-            <input type="text" v-model="fCliente" placeholder="Ej: Carlos Pérez">
+      <div class="form-grupo">
+        <label>Nombre del cliente *</label>
+        <input
+          v-model="form.nombre"
+          type="text"
+          placeholder="Ej: Carlos Perez"
+          :class="{ 'campo-error': errores.nombre }"
+        />
+        <span v-if="errores.nombre" class="form-error-msg">{{ errores.nombre }}</span>
+      </div>
+
+      <!-- SECCION: servicio -->
+      <div class="form-seccion">Detalle del servicio</div>
+
+      <div class="form-fila">
+        <div class="form-grupo">
+          <label>Tipo de servicio *</label>
+          <select v-model="form.tipoServicio" :class="{ 'campo-error': errores.tipoServicio }">
+            <option value="">-- Seleccionar --</option>
+            <option value="Corte clasico">Corte clasico</option>
+            <option value="Corte moderno">Corte moderno</option>
+            <option value="Barba">Barba</option>
+            <option value="Corte + Barba">Corte + Barba</option>
+            <option value="Cejas">Cejas</option>
+            <option value="Tinte">Tinte</option>
+            <option value="Degradado">Degradado</option>
+            <option value="Corte nino">Corte nino</option>
+          </select>
+          <span v-if="errores.tipoServicio" class="form-error-msg">{{ errores.tipoServicio }}</span>
+        </div>
+        <div class="form-grupo">
+          <label>Barbero *</label>
+          <select v-model="form.barbero" :class="{ 'campo-error': errores.barbero }">
+            <option value="">-- Seleccionar --</option>
+            <option v-for="b in barberos" :key="b" :value="b">{{ b }}</option>
+          </select>
+          <span v-if="errores.barbero" class="form-error-msg">{{ errores.barbero }}</span>
+        </div>
+      </div>
+
+      <div class="form-fila">
+        <div class="form-grupo">
+          <label>Fecha y hora *</label>
+          <input
+            v-model="form.fechaHora"
+            type="datetime-local"
+            :max="fechaMaxima()"
+            :class="{ 'campo-error': errores.fechaHora }"
+          />
+          <span v-if="errores.fechaHora" class="form-error-msg">{{ errores.fechaHora }}</span>
+        </div>
+        <div class="form-grupo">
+          <label>Precio *</label>
+          <div class="precio-wrapper">
+            <span class="precio-prefijo">$</span>
+            <input
+              v-model="form.precio"
+              type="number"
+              min="0"
+              step="100"
+              placeholder="0"
+              :class="{ 'campo-error': errores.precio }"
+            />
           </div>
+          <span v-if="errores.precio" class="form-error-msg">{{ errores.precio }}</span>
+        </div>
+      </div>
 
-          <div class="campo-formulario">
-            <label>Tipo de servicio</label>
-            <select v-model="fTipo">
-              <option value="">Selecciona...</option>
-              <option v-for="tipo in tiposServicio" :key="tipo" :value="tipo">{{ tipo }}</option>
-            </select>
-          </div>
+      <!-- SECCION: pago -->
+      <div class="form-seccion">Informacion de pago</div>
 
-          <div class="campo-formulario">
-            <label>Barbero</label>
-            <select v-model="fBarbero">
-              <option value="">Selecciona...</option>
-              <option v-for="barbero in barberos" :key="barbero" :value="barbero">{{ barbero }}</option>
-            </select>
-          </div>
+      <div class="form-fila">
+        <div class="form-grupo">
+          <label>Metodo de pago *</label>
+          <select v-model="form.metodoPago" :class="{ 'campo-error': errores.metodoPago }">
+            <option value="">-- Seleccionar --</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="tarjeta">Tarjeta</option>
+          </select>
+          <span v-if="errores.metodoPago" class="form-error-msg">{{ errores.metodoPago }}</span>
+        </div>
+        <div class="form-grupo">
+          <label>Estado del pago *</label>
+          <select v-model="form.estadoPago" :class="{ 'campo-error': errores.estadoPago }">
+            <option value="">-- Seleccionar --</option>
+            <option value="pagado">Pagado</option>
+            <option value="abonado">Abonado</option>
+            <option value="pendiente">Pendiente</option>
+          </select>
+          <span v-if="errores.estadoPago" class="form-error-msg">{{ errores.estadoPago }}</span>
+        </div>
+      </div>
 
-          <div class="campo-formulario">
-            <label>Fecha</label>
-            <input type="date" v-model="fFecha">
-          </div>
+      <!-- SECCION: observaciones -->
+      <div class="form-seccion">Notas adicionales</div>
 
-          <div class="campo-formulario">
-            <label>Hora</label>
-            <input type="time" v-model="fHora">
-          </div>
+      <div class="form-grupo">
+        <label>Observaciones (opcional)</label>
+        <textarea v-model="form.observaciones" placeholder="Alguna nota sobre el servicio..."></textarea>
+      </div>
 
-          <div class="campo-formulario">
-            <label>Precio cobrado</label>
-            <input type="number" v-model="fPrecio" placeholder="Ej: 25000">
-          </div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" @click="cerrarModal">Cancelar</button>
+        <button class="btn-guardar" @click="guardarServicio">
+          <span v-if="modoEditar">Guardar cambios</span>
+          <span v-else>Registrar servicio</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-          <div class="campo-formulario">
-            <label>Método de pago</label>
-            <select v-model="fMetodoPago">
-              <option value="">Selecciona...</option>
-              <option v-for="metodo in metodosPago" :key="metodo" :value="metodo">{{ metodo }}</option>
-            </select>
-          </div>
+  <!-- ===================== MODAL ABONO ===================== -->
+  <div v-if="mostrarModalAbono" class="modal-overlay" @click.self="cerrarModalAbono">
+    <div class="modal modal-abono">
+      <div class="modal-cabecera">
+        <div class="modal-titulo">Registrar abono</div>
+        <button class="modal-cerrar" @click="cerrarModalAbono">&#10005;</button>
+      </div>
 
-          <div class="campo-formulario">
-            <label>Estado del pago</label>
-            <select v-model="fEstadoPago">
-              <option v-for="estado in estadosPago" :key="estado" :value="estado">{{ estado }}</option>
-            </select>
-          </div>
+      <!-- info del servicio -->
+      <div v-if="servicioAbonando" class="abono-info">
+        <div class="abono-info-fila">
+          <span>Cliente</span>
+          <span>{{ servicioAbonando.nombre }}</span>
+        </div>
+        <div class="abono-info-fila">
+          <span>Servicio</span>
+          <span>{{ servicioAbonando.tipoServicio }}</span>
+        </div>
+        <div class="abono-info-fila">
+          <span>Valor total</span>
+          <span>$ {{ formatPrecio(servicioAbonando.precio) }}</span>
+        </div>
+        <div class="abono-info-fila">
+          <span>Total abonado</span>
+          <span>$ {{ formatPrecio(totalAbonado(servicioAbonando)) }}</span>
+        </div>
+        <div class="abono-info-fila destacado">
+          <span>Saldo pendiente</span>
+          <span>$ {{ formatPrecio(calcularSaldo(servicioAbonando)) }}</span>
+        </div>
+      </div>
 
-          <div class="campo-formulario">
-            <label>Calificación del cliente</label>
-            <div class="selector-estrellas">
-              <button
-                type="button"
-                v-for="n in 5"
-                :key="n"
-                :class="{ activa: n <= fCalificacion }"
-                @click="elegirEstrella(n)"
-              >★</button>
-            </div>
+      <!-- historial de abonos -->
+      <div v-if="servicioAbonando && servicioAbonando.abonos && servicioAbonando.abonos.length > 0">
+        <div class="form-seccion" style="margin-bottom: 8px;">Historial</div>
+        <div class="abono-lista-scroll">
+          <div
+            v-for="(ab, idx) in servicioAbonando.abonos"
+            :key="idx"
+            class="abono-registro"
+          >
+            <span>{{ formatearFechaCorta(ab.fecha) }}</span>
+            <span>$ {{ formatPrecio(ab.monto) }}</span>
           </div>
+        </div>
+      </div>
+      <div v-else-if="servicioAbonando" class="abono-sin-registros">
+        Sin abonos registrados aun
+      </div>
 
-          <div class="campo-formulario">
-            <label>Observaciones (opcional)</label>
-            <textarea v-model="fObservaciones" placeholder="Ej: pidió que no le rebajaran mucho a los lados"></textarea>
-          </div>
+      <!-- nuevo abono -->
+      <div class="form-seccion" style="margin-top: 4px;">Nuevo abono</div>
 
-          <div class="botones-modal">
-            <button type="submit" class="boton-guardar">Guardar</button>
-            <button type="button" class="boton-cancelar" @click="cerrarModal">Cancelar</button>
-          </div>
-        </form>
+      <div class="form-grupo">
+        <label>Monto del abono *</label>
+        <div class="precio-wrapper">
+          <span class="precio-prefijo">$</span>
+          <input
+            v-model="montoAbono"
+            type="number"
+            min="1"
+            step="100"
+            placeholder="0"
+            :class="{ 'campo-error': errorAbono }"
+          />
+        </div>
+        <span v-if="errorAbono" class="form-error-msg">{{ errorAbono }}</span>
+      </div>
+
+      <div class="modal-botones">
+        <button class="btn-cancelar" @click="cerrarModalAbono">Cancelar</button>
+        <button class="btn-registrar-abono" @click="registrarAbono">Registrar abono</button>
+      </div>
+    </div>
+  </div>
+  <!-- ===================== MODAL CALIFICACION ===================== -->
+  <div v-if="mostrarModalCalificacion" class="modal-overlay" @click.self="cerrarModalCalificacion">
+    <div class="modal modal-calif">
+      <div class="modal-cabecera">
+        <div class="modal-titulo">Calificacion del cliente</div>
+        <button class="modal-cerrar" @click="cerrarModalCalificacion">&#10005;</button>
+      </div>
+
+      <div v-if="servicioCalificando" class="calif-cliente">
+        {{ servicioCalificando.nombre }} — {{ servicioCalificando.tipoServicio }}
+      </div>
+
+      <div class="form-grupo">
+        <label>Como calificas el servicio prestado?</label>
+        <div class="estrellas-form estrellas-grandes">
+          <span
+            v-for="i in 5"
+            :key="i"
+            :class="i <= calificacionTemp ? 'on' : 'off'"
+            @click="calificacionTemp = i"
+          >&#9733;</span>
+        </div>
+        <div class="calif-texto" v-if="calificacionTemp === 1">Muy malo</div>
+        <div class="calif-texto" v-else-if="calificacionTemp === 2">Malo</div>
+        <div class="calif-texto" v-else-if="calificacionTemp === 3">Regular</div>
+        <div class="calif-texto" v-else-if="calificacionTemp === 4">Bueno</div>
+        <div class="calif-texto calif-texto--bueno" v-else-if="calificacionTemp === 5">Excelente</div>
+        <span v-if="errorCalificacion" class="form-error-msg">{{ errorCalificacion }}</span>
+      </div>
+
+      <div class="modal-botones">
+        <button class="btn-cancelar" @click="cerrarModalCalificacion">Omitir</button>
+        <button class="btn-guardar" @click="guardarCalificacion">Guardar calificacion</button>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+import { ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
+import Swal from 'sweetalert2'
+
+export default {
+  setup() {
+    // Barberos del negocio
+    const barberos = ['Don Ramiro', 'Luis', 'Andres']
+
+    // Datos persistidos en localStorage
+    const servicios = useLocalStorage('barberia-servicios-v2', [])
+
+    // Filtros de la lista
+    const filtroBusqueda = ref('')
+    const filtroEstado    = ref('')
+    const filtroBarbero   = ref('')
+
+    // Control modal formulario
+    const mostrarModal = ref(false)
+    const modoEditar   = ref(false)
+    const idEditando   = ref(null)
+
+    // Control modal abono
+    const mostrarModalAbono = ref(false)
+    const servicioAbonando  = ref(null)
+    const montoAbono        = ref('')
+    const errorAbono        = ref('')
+
+    // Control modal calificacion
+    const mostrarModalCalificacion = ref(false)
+    const servicioCalificando      = ref(null)
+    const calificacionTemp         = ref(0)
+    const errorCalificacion        = ref('')
+
+    // Formulario en blanco
+    const formVacio = {
+      nombre:       '',
+      tipoServicio: '',
+      barbero:      '',
+      fechaHora:    '',
+      precio:       '',
+      metodoPago:   '',
+      estadoPago:   '',
+      calificacion: 0,
+      observaciones: '',
+      abonos:       []
+    }
+
+    const form    = ref({ ...formVacio })
+    const errores = ref({})
+
+    // ── Abrir / cerrar modal formulario ──────────────────
+    function abrirModalNuevo() {
+      form.value    = { ...formVacio, abonos: [] }
+      errores.value = {}
+      modoEditar.value  = false
+      idEditando.value  = null
+      mostrarModal.value = true
+    }
+
+    function abrirModalEditar(servicio) {
+      form.value    = { ...servicio, abonos: servicio.abonos ? [...servicio.abonos] : [] }
+      errores.value = {}
+      modoEditar.value  = true
+      idEditando.value  = servicio.id
+      mostrarModal.value = true
+    }
+
+    function cerrarModal() {
+      mostrarModal.value = false
+      errores.value = {}
+    }
+
+    // ── Fecha maxima: no permitir fechas futuras ──────────
+    function fechaMaxima() {
+      const ahora = new Date()
+      const pad = n => String(n).padStart(2, '0')
+      return (
+        ahora.getFullYear() + '-' +
+        pad(ahora.getMonth() + 1) + '-' +
+        pad(ahora.getDate()) + 'T' +
+        pad(ahora.getHours()) + ':' +
+        pad(ahora.getMinutes())
+      )
+    }
+
+    // ── Validaciones ─────────────────────────────────────
+    function validarForm() {
+      const e = {}
+
+      if (!form.value.nombre.trim())
+        e.nombre = 'El nombre del cliente es obligatorio'
+
+      if (!form.value.tipoServicio)
+        e.tipoServicio = 'Selecciona un tipo de servicio'
+
+      if (!form.value.barbero)
+        e.barbero = 'Selecciona el barbero'
+
+      if (!form.value.fechaHora) {
+        e.fechaHora = 'La fecha y hora son obligatorias'
+      } else {
+        const seleccionada = new Date(form.value.fechaHora)
+        const ahora = new Date()
+        if (seleccionada > ahora)
+          e.fechaHora = 'La fecha no puede ser futura'
+      }
+
+      if (!form.value.precio || Number(form.value.precio) <= 0)
+        e.precio = 'Ingresa un precio valido mayor a 0'
+
+      if (!form.value.metodoPago)
+        e.metodoPago = 'Selecciona el metodo de pago'
+
+      if (!form.value.estadoPago)
+        e.estadoPago = 'Selecciona el estado del pago'
+
+      errores.value = e
+      return Object.keys(e).length === 0
+    }
+
+    // ── Guardar (nuevo o edicion) ────────────────────────
+    function guardarServicio() {
+      if (!validarForm()) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campos incompletos',
+          text: 'Revisa los campos marcados en rojo antes de continuar.',
+          background: '#1c1c1c',
+          color: '#f0f0f0',
+          confirmButtonColor: '#c9a84c',
+          confirmButtonText: 'Entendido'
+        })
+        return
+      }
+
+      const datos = {
+        ...form.value,
+        precio: Number(form.value.precio),
+        abonos: form.value.abonos || []
+      }
+
+      if (modoEditar.value) {
+        const idx = servicios.value.findIndex(s => s.id === idEditando.value)
+        if (idx !== -1) {
+          servicios.value[idx] = { ...datos, id: idEditando.value }
+        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Servicio actualizado',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2200,
+          background: '#1c1c1c',
+          color: '#f0f0f0'
+        })
+        cerrarModal()
+      } else {
+        const nuevoId = Date.now()
+        servicios.value.push({ ...datos, id: nuevoId })
+        cerrarModal()
+        // Abrir modal de calificacion despues de guardar
+        const recienCreado = servicios.value.find(s => s.id === nuevoId)
+        abrirModalCalificacion(recienCreado)
+      }
+    }
+
+    // ── Eliminar ─────────────────────────────────────────
+    function pedirConfirmacion(servicio) {
+      Swal.fire({
+        title: 'Eliminar servicio',
+        html: 'Vas a eliminar el registro de <strong>' + servicio.nombre + '</strong>.<br>Esta accion no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#c0392b',
+        cancelButtonColor: '#2a2a2a',
+        background: '#1c1c1c',
+        color: '#f0f0f0'
+      }).then(function(resultado) {
+        if (resultado.isConfirmed) {
+          servicios.value = servicios.value.filter(s => s.id !== servicio.id)
+          Swal.fire({
+            icon: 'success',
+            title: 'Servicio eliminado',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            background: '#1c1c1c',
+            color: '#f0f0f0'
+          })
+        }
+      })
+    }
+
+    // ── Modal abono ───────────────────────────────────────
+    function abrirModalAbono(servicio) {
+      servicioAbonando.value = servicio
+      montoAbono.value = ''
+      errorAbono.value = ''
+      mostrarModalAbono.value = true
+    }
+
+    function cerrarModalAbono() {
+      mostrarModalAbono.value = false
+      servicioAbonando.value = null
+      montoAbono.value = ''
+      errorAbono.value = ''
+    }
+
+    function registrarAbono() {
+      const monto = Number(montoAbono.value)
+      const saldo = calcularSaldo(servicioAbonando.value)
+
+      if (!monto || monto <= 0) {
+        errorAbono.value = 'Ingresa un monto valido mayor a 0'
+        return
+      }
+
+      if (monto > saldo) {
+        errorAbono.value = 'El abono no puede superar el saldo pendiente ($ ' + formatPrecio(saldo) + ')'
+        return
+      }
+
+      errorAbono.value = ''
+
+      const idx = servicios.value.findIndex(s => s.id === servicioAbonando.value.id)
+      if (idx === -1) return
+
+      // Agregar abono al historial
+      const abonosActuales = servicios.value[idx].abonos || []
+      const nuevoAbono = { monto: monto, fecha: new Date().toISOString() }
+      const abonosActualizados = [...abonosActuales, nuevoAbono]
+
+      // Si con este abono queda saldo 0, marcar como pagado
+      const nuevoTotalAbonado = abonosActualizados.reduce((acc, a) => acc + a.monto, 0)
+      const nuevoEstado = nuevoTotalAbonado >= servicios.value[idx].precio ? 'pagado' : 'abonado'
+
+      servicios.value[idx] = {
+        ...servicios.value[idx],
+        abonos: abonosActualizados,
+        estadoPago: nuevoEstado
+      }
+
+      // Actualizar referencia del modal
+      servicioAbonando.value = servicios.value[idx]
+      montoAbono.value = ''
+
+      if (nuevoEstado === 'pagado') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Pago completado',
+          text: 'El servicio quedo marcado como pagado.',
+          background: '#1c1c1c',
+          color: '#f0f0f0',
+          confirmButtonColor: '#4caf50',
+          confirmButtonText: 'Aceptar'
+        }).then(function() {
+          cerrarModalAbono()
+        })
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Abono registrado',
+          text: 'Saldo pendiente: $ ' + formatPrecio(calcularSaldo(servicios.value[idx])),
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2500,
+          background: '#1c1c1c',
+          color: '#f0f0f0'
+        })
+      }
+    }
+
+    // ── Modal calificacion ────────────────────────────────
+    function abrirModalCalificacion(servicio) {
+      servicioCalificando.value    = servicio
+      calificacionTemp.value       = servicio.calificacion || 0
+      errorCalificacion.value      = ''
+      mostrarModalCalificacion.value = true
+    }
+
+    function cerrarModalCalificacion() {
+      mostrarModalCalificacion.value = false
+      servicioCalificando.value    = null
+      calificacionTemp.value       = 0
+      errorCalificacion.value      = ''
+      // Toast de servicio registrado al cerrar (solo si venimos de nuevo registro)
+    }
+
+    function guardarCalificacion() {
+      if (!calificacionTemp.value || calificacionTemp.value < 1) {
+        errorCalificacion.value = 'Selecciona entre 1 y 5 estrellas'
+        return
+      }
+      const idx = servicios.value.findIndex(s => s.id === servicioCalificando.value.id)
+      if (idx !== -1) {
+        servicios.value[idx] = { ...servicios.value[idx], calificacion: calificacionTemp.value }
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Servicio registrado',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2200,
+        background: '#1c1c1c',
+        color: '#f0f0f0'
+      })
+      cerrarModalCalificacion()
+    }
+
+    // ── Filtros ───────────────────────────────────────────
+    function serviciosFiltrados() {
+      let lista = servicios.value
+
+      if (filtroBusqueda.value.trim()) {
+        const b = filtroBusqueda.value.trim().toLowerCase()
+        lista = lista.filter(s => s.nombre.toLowerCase().includes(b))
+      }
+
+      if (filtroEstado.value) {
+        lista = lista.filter(s => s.estadoPago === filtroEstado.value)
+      }
+
+      if (filtroBarbero.value) {
+        lista = lista.filter(s => s.barbero === filtroBarbero.value)
+      }
+
+      return lista
+    }
+
+    // ── Calculos de resumen ───────────────────────────────
+    function totalCobrado() {
+      const total = servicios.value
+        .filter(s => s.estadoPago === 'pagado')
+        .reduce((acc, s) => acc + Number(s.precio), 0)
+      return formatPrecio(total)
+    }
+
+    function contarEstado(estado) {
+      return servicios.value.filter(s => s.estadoPago === estado).length
+    }
+
+    function servicioMasPopular() {
+      if (servicios.value.length === 0) return '--'
+      const conteo = {}
+      servicios.value.forEach(s => {
+        conteo[s.tipoServicio] = (conteo[s.tipoServicio] || 0) + 1
+      })
+      let max = 0
+      let popular = '--'
+      for (const tipo in conteo) {
+        if (conteo[tipo] > max) {
+          max = conteo[tipo]
+          popular = tipo
+        }
+      }
+      return popular
+    }
+
+    // ── Calculos de abonos ────────────────────────────────
+    function totalAbonado(servicio) {
+      if (!servicio.abonos || servicio.abonos.length === 0) return 0
+      return servicio.abonos.reduce((acc, a) => acc + Number(a.monto), 0)
+    }
+
+    function calcularSaldo(servicio) {
+      return Number(servicio.precio) - totalAbonado(servicio)
+    }
+
+    // ── Formato de precio en pesos colombianos ────────────
+    function formatPrecio(valor) {
+      return Number(valor).toLocaleString('es-CO')
+    }
+
+    // ── Formato de fechas ─────────────────────────────────
+    function formatearFecha(fechaHora) {
+      if (!fechaHora) return ''
+      const d = new Date(fechaHora)
+      return d.toLocaleString('es-CO', {
+        day:    '2-digit',
+        month:  'short',
+        hour:   '2-digit',
+        minute: '2-digit'
+      })
+    }
+
+    function formatearFechaCorta(fechaIso) {
+      if (!fechaIso) return ''
+      const d = new Date(fechaIso)
+      return d.toLocaleString('es-CO', {
+        day:    '2-digit',
+        month:  'short',
+        hour:   '2-digit',
+        minute: '2-digit'
+      })
+    }
+
+    return {
+      barberos,
+      servicios,
+      filtroBusqueda,
+      filtroEstado,
+      filtroBarbero,
+      mostrarModal,
+      modoEditar,
+      mostrarModalAbono,
+      servicioAbonando,
+      montoAbono,
+      errorAbono,
+      form,
+      errores,
+      abrirModalNuevo,
+      abrirModalEditar,
+      cerrarModal,
+      guardarServicio,
+      pedirConfirmacion,
+      abrirModalAbono,
+      cerrarModalAbono,
+      registrarAbono,
+      mostrarModalCalificacion,
+      servicioCalificando,
+      calificacionTemp,
+      errorCalificacion,
+      abrirModalCalificacion,
+      cerrarModalCalificacion,
+      guardarCalificacion,
+      serviciosFiltrados,
+      totalCobrado,
+      contarEstado,
+      servicioMasPopular,
+      totalAbonado,
+      calcularSaldo,
+      formatPrecio,
+      formatearFecha,
+      formatearFechaCorta,
+      fechaMaxima
+    }
+  }
+}
+</script>
