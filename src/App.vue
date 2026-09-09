@@ -112,9 +112,8 @@
       <div v-if="s.observaciones" class="t-obs">Nota: {{ s.observaciones }}</div>
 
       <div class="t-acciones">
-        <button class="btn-calificar" @click="abrirModalCalificacion(s)">
-          <span v-if="s.calificacion > 0">Recalificar</span>
-          <span v-else>Calificar</span>
+        <button class="btn-calificar" v-if="s.calificacion === 0" @click="abrirModalCalificacion(s)">
+          Calificar
         </button>
         <button class="btn-editar" @click="abrirModalEditar(s)">Editar</button>
         <button class="btn-eliminar" @click="pedirConfirmacion(s)">Eliminar</button>
@@ -149,16 +148,17 @@
 
       <div class="form-fila">
         <div class="form-grupo">
-          <label>Tipo de servicio *</label>
-          <select v-model="form.tipoServicio" :class="{ 'campo-error': errores.tipoServicio }">
-            <option value="">-- Seleccionar --</option>
-            <option value="Barba">Barba</option>
-            <option value="Corte + Barba">Corte + Barba</option>
-            <option value="Cejas">Cejas</option>
-            <option value="Tinte">Tinte</option>
-            <option value="Degradado">Degradado</option>
-            <option value="Corte nino">Corte nino</option>
-          </select>
+          <label>Tipo de servicio * (puede seleccionar varios)</label>
+          <div class="servicios-grid">
+            <label v-for="srv in tiposServicio" :key="srv" class="check-item">
+              <input
+                type="checkbox"
+                :value="srv"
+                v-model="form.tiposSeleccionados"
+              />
+              {{ srv }}
+            </label>
+          </div>
           <span v-if="errores.tipoServicio" class="form-error-msg">{{ errores.tipoServicio }}</span>
         </div>
         <div class="form-grupo">
@@ -360,6 +360,8 @@ export default {
   setup() {
     const barberos = ['Don Ramiro', 'Luis', 'Andres']
 
+    const tiposServicio = ['Barba', 'Corte + Barba', 'Cejas', 'Tinte', 'Degradado', 'Corte nino']
+
     const servicios = useLocalStorage('barberia-servicios-v2', [])
 
     const mostrarModal = ref(false)
@@ -377,16 +379,16 @@ export default {
     const errorCalificacion        = ref('')
 
     const formVacio = {
-      nombre:        '',
-      tipoServicio:  '',
-      barbero:       '',
-      fechaHora:     '',
-      precio:        '',
-      metodoPago:    '',
-      estadoPago:    '',
-      calificacion:  0,
-      observaciones: '',
-      abonos:        []
+      nombre:             '',
+      tiposSeleccionados: [],
+      barbero:            '',
+      fechaHora:          '',
+      precio:             '',
+      metodoPago:         '',
+      estadoPago:         '',
+      calificacion:       0,
+      observaciones:      '',
+      abonos:             []
     }
 
     const form    = ref({ ...formVacio })
@@ -401,7 +403,7 @@ export default {
     }
 
     function abrirModalEditar(servicio) {
-      form.value         = { ...servicio, abonos: servicio.abonos ? [...servicio.abonos] : [] }
+      form.value         = { ...servicio, tiposSeleccionados: servicio.tiposSeleccionados ? [...servicio.tiposSeleccionados] : [], abonos: servicio.abonos ? [...servicio.abonos] : [] }
       errores.value      = {}
       modoEditar.value   = true
       idEditando.value   = servicio.id
@@ -449,8 +451,8 @@ export default {
       if (!form.value.nombre.trim())
         e.nombre = 'El nombre del cliente es obligatorio'
 
-      if (!form.value.tipoServicio)
-        e.tipoServicio = 'Selecciona un tipo de servicio'
+      if (!form.value.tiposSeleccionados || form.value.tiposSeleccionados.length === 0)
+        e.tipoServicio = 'Selecciona al menos un servicio'
 
       if (!form.value.barbero)
         e.barbero = 'Selecciona el barbero'
@@ -492,6 +494,7 @@ export default {
 
       const datos = {
         ...form.value,
+        tipoServicio: form.value.tiposSeleccionados.join(', '),
         precio: Number(form.value.precio),
         abonos: form.value.abonos || []
       }
@@ -730,6 +733,7 @@ export default {
 
     return {
       barberos,
+      tiposServicio,
       servicios,
       mostrarModal,
       modoEditar,

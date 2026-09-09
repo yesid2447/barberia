@@ -65,14 +65,14 @@ body::before {
    HEADER
 ============================== */
 .header {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  background: linear-gradient(135deg, #0f0520, #110721);
   border-bottom: none;
-  padding: 16px 24px;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -86,26 +86,27 @@ body::before {
 }
 
 .header-titulo {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.9rem;
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
 }
 
 .header-subtitulo {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.65);
-  margin-top: 2px;
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.70);
+  margin-top: 3px;
+  font-weight: 400;
 }
 
 .btn-nuevo {
   background: #ffffff;
   color: var(--accent);
   border: none;
-  padding: 9px 22px;
+  padding: 12px 28px;
   border-radius: 8px;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
   letter-spacing: 0.3px;
@@ -144,7 +145,7 @@ body::before {
 }
 
 .resumen-card .numero {
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 700;
   color: var(--accent);
   line-height: 1;
@@ -155,11 +156,11 @@ body::before {
 }
 
 .resumen-card .numero.small {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
 }
 
 .resumen-card .etiqueta {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin-top: 6px;
   text-transform: uppercase;
@@ -189,7 +190,7 @@ body::before {
   color: var(--text-muted);
 }
 
-.lista-vacia p { font-size: 0.95rem; }
+.lista-vacia p { font-size: 1.05rem; }
 
 /* ==============================
    TARJETA
@@ -199,10 +200,10 @@ body::before {
   border: 1px solid var(--border);
   border-left: 4px solid var(--border);
   border-radius: 12px;
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   transition: transform 0.15s, box-shadow 0.15s;
   box-shadow: 0 1px 4px rgba(124,58,237,0.05);
 }
@@ -224,26 +225,26 @@ body::before {
 }
 
 .t-nombre {
-  font-size: 0.98rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: var(--text);
 }
 
 .t-fecha {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   white-space: nowrap;
   padding-top: 2px;
 }
 
 .t-servicio {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--accent);
 }
 
 .t-barbero {
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   color: var(--text-muted);
 }
 
@@ -255,7 +256,7 @@ body::before {
 }
 
 .t-precio {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--green);
 }
@@ -263,15 +264,15 @@ body::before {
 .tarjeta.abonado .t-precio { color: var(--blue); }
 
 .t-saldo {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 
 /* badges */
 .badge {
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
   white-space: nowrap;
   letter-spacing: 0.3px;
@@ -284,7 +285,7 @@ body::before {
 
 /* metodo de pago */
 .t-metodo {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
   display: flex;
   align-items: center;
@@ -293,9 +294,9 @@ body::before {
 
 .metodo-tag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 4px;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: capitalize;
@@ -307,39 +308,39 @@ body::before {
 
 /* estrellas */
 .t-estrellas { display: flex; gap: 2px; }
-.estrella-on  { color: #f59e0b; font-size: 0.9rem; }
-.estrella-off { color: var(--border); font-size: 0.9rem; }
+.estrella-on  { color: #f59e0b; font-size: 1rem; }
+.estrella-off { color: var(--border); font-size: 1rem; }
 
 /* alertas calificacion */
 .t-alerta {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--red);
   background: var(--red-bg);
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 4px;
 }
 
 .t-sin-calificar {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--text-dim);
   font-style: italic;
 }
 
 .t-calificacion-ok {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--green);
   font-weight: 600;
 }
 
 /* aviso pendiente */
 .t-aviso-pendiente {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--orange);
   background: var(--orange-bg);
   border: 1px solid rgba(217,119,6,0.3);
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 5px;
   text-align: center;
 }
@@ -354,7 +355,7 @@ body::before {
 }
 
 .t-abonos-titulo {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: var(--blue);
   font-weight: 600;
   text-transform: uppercase;
@@ -370,7 +371,7 @@ body::before {
 .t-abono-item {
   display: flex;
   justify-content: space-between;
-  font-size: 0.74rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
 }
 
@@ -379,7 +380,7 @@ body::before {
 .t-abonos-total {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 700;
   border-top: 1px solid var(--border-soft);
   padding-top: 5px;
@@ -389,7 +390,7 @@ body::before {
 .t-abonos-total span:last-child { color: var(--blue); }
 
 .t-obs {
-  font-size: 0.74rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
   font-style: italic;
   border-top: 1px solid var(--border-soft);
@@ -401,9 +402,9 @@ body::before {
   background: var(--blue-bg);
   color: var(--blue);
   border: 1px solid var(--blue);
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
@@ -423,9 +424,9 @@ body::before {
   background: var(--accent-pale);
   color: var(--accent);
   border: 1px solid var(--accent-light);
-  padding: 7px;
+  padding: 8px;
   border-radius: 7px;
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -438,9 +439,9 @@ body::before {
   background: var(--accent-pale);
   color: var(--accent);
   border: 1px solid var(--accent-light);
-  padding: 7px;
+  padding: 8px;
   border-radius: 7px;
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -453,9 +454,9 @@ body::before {
   background: var(--red-bg);
   color: var(--red);
   border: 1px solid #fca5a5;
-  padding: 7px;
+  padding: 8px;
   border-radius: 7px;
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -502,7 +503,7 @@ body::before {
 }
 
 .modal-titulo {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--accent);
 }
@@ -511,7 +512,7 @@ body::before {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
   padding: 2px 6px;
   border-radius: 4px;
@@ -527,7 +528,7 @@ body::before {
    FORMULARIO
 ============================== */
 .form-seccion {
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--accent);
   text-transform: uppercase;
@@ -544,7 +545,7 @@ body::before {
 }
 
 .form-grupo label {
-  font-size: 0.74rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -556,9 +557,9 @@ body::before {
   background: var(--bg-input);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 9px 12px;
+  padding: 10px 13px;
   border-radius: 8px;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-family: inherit;
   outline: none;
   width: 100%;
@@ -589,7 +590,43 @@ body::before {
   font-weight: 600;
 }
 
-/* precio con prefijo */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+}
+
+.check-item:hover {
+  background: var(--accent-pale);
+  border-color: var(--accent-light);
+}
+
+.check-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+}
+
 .precio-wrapper { position: relative; }
 
 .precio-prefijo {
