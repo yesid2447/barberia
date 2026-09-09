@@ -36,27 +36,9 @@
     </div>
   </div>
 
-  <!-- ===================== FILTROS ===================== -->
-  <div class="filtros">
-    <input v-model="filtroBusqueda" type="text" placeholder="Buscar por nombre de cliente..." />
-    <select v-model="filtroEstado">
-      <option value="">Todos los estados</option>
-      <option value="pagado">Pagado</option>
-      <option value="abonado">Abonado</option>
-      <option value="pendiente">Pendiente</option>
-    </select>
-    <select v-model="filtroBarbero">
-      <option value="">Todos los barberos</option>
-      <option v-for="b in barberos" :key="b" :value="b">{{ b }}</option>
-    </select>
-  </div>
-
   <!-- ===================== LISTA ===================== -->
   <div class="lista">
     <div v-if="serviciosFiltrados().length === 0" class="lista-vacia">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M6 2v6m0 0c0 2.21 1.79 4 4 4s4-1.79 4-4V2M6 8H2m16 0h-4M12 12v10M8 22h8"/>
-      </svg>
       <p>No hay servicios registrados</p>
     </div>
 
@@ -186,8 +168,6 @@
           <label>Tipo de servicio *</label>
           <select v-model="form.tipoServicio" :class="{ 'campo-error': errores.tipoServicio }">
             <option value="">-- Seleccionar --</option>
-            <option value="Corte clasico">Corte clasico</option>
-            <option value="Corte moderno">Corte moderno</option>
             <option value="Barba">Barba</option>
             <option value="Corte + Barba">Corte + Barba</option>
             <option value="Cejas">Cejas</option>
@@ -213,8 +193,9 @@
           <input
             v-model="form.fechaHora"
             type="datetime-local"
-            :max="fechaMaxima()"
+            :min="fechaMinima()"
             :class="{ 'campo-error': errores.fechaHora }"
+            @change="validarHorario"
           />
           <span v-if="errores.fechaHora" class="form-error-msg">{{ errores.fechaHora }}</span>
         </div>
@@ -405,11 +386,6 @@ export default {
     // Datos persistidos en localStorage
     const servicios = useLocalStorage('barberia-servicios-v2', [])
 
-    // Filtros de la lista
-    const filtroBusqueda = ref('')
-    const filtroEstado    = ref('')
-    const filtroBarbero   = ref('')
-
     // Control modal formulario
     const mostrarModal = ref(false)
     const modoEditar   = ref(false)
@@ -466,17 +442,36 @@ export default {
       errores.value = {}
     }
 
-    // ── Fecha maxima: no permitir fechas futuras ──────────
-    function fechaMaxima() {
-      const ahora = new Date()
+    // ── Fecha minima: solo hoy en adelante ───────────────
+    function fechaMinima() {
+      const hoy = new Date()
       const pad = n => String(n).padStart(2, '0')
       return (
-        ahora.getFullYear() + '-' +
-        pad(ahora.getMonth() + 1) + '-' +
-        pad(ahora.getDate()) + 'T' +
-        pad(ahora.getHours()) + ':' +
-        pad(ahora.getMinutes())
+        hoy.getFullYear() + '-' +
+        pad(hoy.getMonth() + 1) + '-' +
+        pad(hoy.getDate()) + 'T00:00'
       )
+    }
+
+    // ── Validar horario 8am - 6pm al cambiar el input ────
+    function validarHorario() {
+      if (!form.value.fechaHora) return
+      const hora = new Date(form.value.fechaHora).getHours()
+      if (hora < 8 || hora >= 18) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Fuera del horario de atencion',
+          text: 'La barberia atiende de 8:00 AM a 6:00 PM. Por favor selecciona una hora dentro de ese rango.',
+          background: '#ffffff',
+          color: '#1e1740',
+          confirmButtonColor: '#7c3aed',
+          confirmButtonText: 'Entendido'
+        })
+        form.value.fechaHora = ''
+        errores.value.fechaHora = 'Selecciona una hora entre 8:00 AM y 6:00 PM'
+      } else {
+        errores.value.fechaHora = ''
+      }
     }
 
     // ── Validaciones ─────────────────────────────────────
@@ -495,10 +490,10 @@ export default {
       if (!form.value.fechaHora) {
         e.fechaHora = 'La fecha y hora son obligatorias'
       } else {
-        const seleccionada = new Date(form.value.fechaHora)
-        const ahora = new Date()
-        if (seleccionada > ahora)
-          e.fechaHora = 'La fecha no puede ser futura'
+        const hora = new Date(form.value.fechaHora).getHours()
+        if (hora < 8 || hora >= 18) {
+          e.fechaHora = 'Selecciona una hora entre 8:00 AM y 6:00 PM'
+        }
       }
 
       if (!form.value.precio || Number(form.value.precio) <= 0)
@@ -709,24 +704,9 @@ export default {
       cerrarModalCalificacion()
     }
 
-    // ── Filtros ───────────────────────────────────────────
+    // ── Lista completa sin filtros ────────────────────────
     function serviciosFiltrados() {
-      let lista = servicios.value
-
-      if (filtroBusqueda.value.trim()) {
-        const b = filtroBusqueda.value.trim().toLowerCase()
-        lista = lista.filter(s => s.nombre.toLowerCase().includes(b))
-      }
-
-      if (filtroEstado.value) {
-        lista = lista.filter(s => s.estadoPago === filtroEstado.value)
-      }
-
-      if (filtroBarbero.value) {
-        lista = lista.filter(s => s.barbero === filtroBarbero.value)
-      }
-
-      return lista
+      return servicios.value
     }
 
     // ── Calculos de resumen ───────────────────────────────
@@ -799,9 +779,6 @@ export default {
     return {
       barberos,
       servicios,
-      filtroBusqueda,
-      filtroEstado,
-      filtroBarbero,
       mostrarModal,
       modoEditar,
       mostrarModalAbono,
@@ -834,7 +811,8 @@ export default {
       formatPrecio,
       formatearFecha,
       formatearFechaCorta,
-      fechaMaxima
+      fechaMinima,
+      validarHorario
     }
   }
 }
