@@ -121,7 +121,7 @@
     </div>
   </div>
 
-  <div v-if="mostrarModal" class="modal-overlay" @click.self="cerrarModal">
+  <div v-if="mostrarModal" class="modal-overlay">
     <div class="modal">
       <div class="modal-cabecera">
         <div class="modal-titulo">
@@ -460,9 +460,16 @@ export default {
       if (!form.value.fechaHora) {
         e.fechaHora = 'La fecha y hora son obligatorias'
       } else {
-        const hora = new Date(form.value.fechaHora).getHours()
-        if (hora < 8 || hora >= 18)
-          e.fechaHora = 'Selecciona una hora entre 8:00 AM y 6:00 PM'
+        const seleccionada = new Date(form.value.fechaHora)
+        const hoy = new Date()
+        hoy.setHours(0, 0, 0, 0)
+        if (seleccionada < hoy) {
+          e.fechaHora = 'No se pueden registrar servicios en fechas pasadas'
+        } else {
+          const hora = seleccionada.getHours()
+          if (hora < 8 || hora >= 18)
+            e.fechaHora = 'Selecciona una hora entre 8:00 AM y 6:00 PM'
+        }
       }
 
       if (!form.value.precio || Number(form.value.precio) <= 0)
@@ -519,8 +526,16 @@ export default {
         const nuevoId = Date.now()
         servicios.value.push({ ...datos, id: nuevoId })
         cerrarModal()
-        const recienCreado = servicios.value.find(s => s.id === nuevoId)
-        abrirModalCalificacion(recienCreado)
+        Swal.fire({
+          icon: 'success',
+          title: 'Servicio registrado',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2200,
+          background: '#ffffff',
+          color: '#1e1740'
+        })
       }
     }
 
