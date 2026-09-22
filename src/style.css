@@ -117,6 +117,17 @@ body::before {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+.header-acciones { display: flex; align-items: center; gap: 10px; position: relative; }
+.header .btn-catalogo { background: #ffffff; color: var(--accent); border: none; border-radius: 8px; padding: 12px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; letter-spacing: 0.3px; transition: background 0.2s, box-shadow 0.2s; }
+.header .btn-catalogo:hover { background: #ede9fe; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.header .catalogo-flotante { top: calc(100% + 10px); right: 0; left: auto; width: min(380px, calc(100vw - 28px)); border-radius: 10px; padding: 16px; z-index: 100; }
+.catalogo-formulario { display: grid; gap: 10px; padding: 4px 0 14px; border-bottom: 1px solid var(--border-soft); }
+.catalogo-formulario label { display: grid; gap: 5px; color: var(--text-muted); font-size: .8rem; font-weight: 700; }
+.catalogo-formulario input { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); color: var(--text); }
+.catalogo-formulario-botones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.catalogo-formulario-botones button { flex: initial; }
+.catalogo-lista { max-height: 230px; overflow-y: auto; }
+
 /* ==============================
    RESUMEN
 ============================== */
@@ -170,6 +181,32 @@ body::before {
 .resumen-card.rojo .numero    { color: var(--red); }
 .resumen-card.naranja .numero { color: var(--orange); }
 .resumen-card.azul .numero    { color: var(--blue); }
+
+.herramientas, .paneles-grid, .acciones-dia {
+  max-width: 1100px;
+  margin: 0 auto 14px;
+  padding: 0 24px;
+}
+.herramientas { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; }
+.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.toolbar button, .btn-secundario, .btn-mini { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); border-radius: 6px; padding: 7px 10px; cursor: pointer; }
+.toolbar button.activo, .toolbar button:hover, .btn-secundario:hover, .btn-mini:hover { background: var(--accent-pale); color: var(--accent); border-color: var(--accent-light); }
+.cliente-busqueda { display: flex; flex-direction: column; gap: 4px; min-width: 210px; }
+.cliente-busqueda label { font-size: .78rem; font-weight: 700; color: var(--text-muted); }
+.cliente-busqueda input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); }
+.historial { color: var(--green); font-size: .88rem; padding-bottom: 8px; }
+.paneles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.panel-titulo { color: var(--accent); font-weight: 700; margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center; }
+.panel-fila { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-soft); color: var(--text); font-size: .88rem; }
+.panel-fila strong { color: var(--green); }.panel-fila small { color: var(--text-muted); }.vacio { color: var(--text-muted); font-size: .85rem; }
+.catalogo-pestana { position: relative; max-width: 1100px; margin: 0 auto 14px; padding: 0 24px; z-index: 4; }.btn-catalogo { background: var(--accent); color: #fff; border: 0; border-radius: 7px 7px 0 0; padding: 10px 16px; font-weight: 700; cursor: pointer; box-shadow: 0 -2px 10px rgba(124,58,237,.18); }.btn-catalogo:hover { background: var(--accent-dark); }.catalogo-flotante { position: absolute; top: 39px; left: 24px; width: min(360px, calc(100% - 48px)); background: var(--bg-card); border: 1px solid var(--accent-light); border-radius: 0 8px 8px 8px; padding: 14px; box-shadow: 0 10px 24px rgba(30,23,64,.18); }.catalogo-cabecera, .catalogo-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; }.catalogo-cabecera { color: var(--accent); margin-bottom: 8px; }.catalogo-item { padding: 8px 0; border-bottom: 1px solid var(--border-soft); color: var(--text); font-size: .88rem; }.catalogo-item small { color: var(--text-muted); }
+.btn-secundario { margin-top: 10px; font-size: .8rem; }.acciones-dia { display: flex; align-items: center; gap: 12px; }.acciones-dia span { color: var(--text-muted); font-size: .8rem; }.btn-caja { background: var(--accent); color: #fff; border: 0; border-radius: 7px; padding: 10px 16px; font-weight: 700; cursor: pointer; }
+.btn-archivados { background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent-light); border-radius: 7px; padding: 9px 14px; font-weight: 700; cursor: pointer; }.btn-archivados:hover { background: var(--accent-pale); }
+.grupo-separador { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; color: var(--accent); font-weight: 800; text-transform: uppercase; font-size: .78rem; letter-spacing: .8px; margin-top: 8px; }.grupo-separador i { height: 1px; background: var(--border); flex: 1; }
+.fotos, .fotos-preview { display: flex; gap: 8px; }.fotos img, .fotos-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }.fotos-preview img { width: 90px; height: 90px; }.alerta-fidelidad { color: var(--orange); background: var(--orange-bg); border: 1px solid #fcd34d; padding: 8px; border-radius: 6px; font-size: .82rem; font-weight: 700; }.modal-caja { max-width: 430px; }.caja-resumen { display: flex; flex-direction: column; gap: 10px; color: var(--text-muted); }.caja-resumen div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-soft); padding-bottom: 8px; }.caja-resumen strong { color: var(--green); }
+
+@media (max-width: 760px) { .paneles-grid { grid-template-columns: 1fr; }.herramientas, .paneles-grid, .acciones-dia { padding-left: 14px; padding-right: 14px; }.acciones-dia { align-items: flex-start; flex-direction: column; }.form-fila { grid-template-columns: 1fr; } }
 
 /* ==============================
    LISTA
@@ -331,6 +368,7 @@ body::before {
   font-size: 0.8rem;
   color: var(--green);
   font-weight: 600;
+  display: none;
 }
 
 /* aviso pendiente */
@@ -434,6 +472,21 @@ body::before {
 
 .btn-calificar:hover { background: #ddd6fe; }
 
+.btn-pagado {
+  flex: 1;
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid #6ee7b7;
+  padding: 8px;
+  border-radius: 7px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-pagado:hover { background: #a7f3d0; }
+
 .btn-editar {
   flex: 1;
   background: var(--accent-pale);
@@ -494,6 +547,9 @@ body::before {
   box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
 }
 
+.catalogo-overlay { z-index: 300; }
+.catalogo-overlay .catalogo-flotante { position: relative; top: auto; right: auto; left: auto; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; border-radius: 16px; padding: 24px; box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15); }
+
 .modal-cabecera {
   display: flex;
   align-items: center;
@@ -549,6 +605,15 @@ body::before {
   color: var(--text-muted);
   font-weight: 600;
   letter-spacing: 0.3px;
+}
+.servicio-select {
+  min-height: 42px;
+  max-height: 120px;
+  cursor: pointer;
+}
+
+.servicio-select option {
+  padding: 7px 8px;
 }
 
 .form-grupo input,
@@ -647,6 +712,17 @@ body::before {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
+.barberos-lista { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.barberos-lista button { border: 1px solid var(--border); background: var(--bg-input); color: var(--text-muted); border-radius: 6px; padding: 6px 9px; cursor: pointer; font-size: .8rem; }
+.barberos-lista button.seleccionado, .barberos-lista button:hover { background: var(--accent-pale); color: var(--accent); border-color: var(--accent-light); }
+
+.modal-calificacion { max-width: 390px; text-align: center; }
+.calificacion-cliente { color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
+.estrellas-selector { display: flex; justify-content: center; gap: 5px; padding: 14px 0 4px; }
+.estrellas-selector button { border: 0; background: transparent; color: var(--border); font-size: 2.5rem; line-height: 1; cursor: pointer; transition: color .15s, transform .15s; }
+.estrellas-selector button:hover, .estrellas-selector button.activa { color: #f59e0b; transform: scale(1.08); }
+.calificacion-ayuda { color: var(--text-muted); font-size: .85rem; min-height: 20px; }
 
 /* estrellas formulario */
 .estrellas-form {
